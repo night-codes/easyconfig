@@ -155,8 +155,6 @@ func TestDirSourceLoader(t *testing.T) {
 		config := new(Config)
 		loader := NewLoader([]Source{
 			DirSource{"tests/config"},
-			// EnvSource{Prefix: "APP"},
-			// FlagsSource{},
 		})
 		if err := loader.Load(config); err != nil {
 			t.Errorf("Error = %s, want %s", err.Error(), "nil")
