@@ -1,0 +1,15 @@
+{
+	"postgresUser": "postgres",
+	"postgresPassword": "password",
+	"postgresHost": "localhost",
+	"postgresPort": 5432,
+	"postgresDBName": "db-name",
+	"postgresSSLMode": "disable",
+	"slice": [
+		"a1",
+		"a2",
+		"a3",
+		"a4",
+		"a5"
+	]
+}
