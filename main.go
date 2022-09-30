@@ -184,10 +184,6 @@ func (l Loader) Help(structPtr interface{}) {
 		tags = append(tags, "flag")
 	}
 	if fromEnv {
-		prefix = strings.TrimSpace(strings.ToUpper(prefix))
-		if prefix != "" && !strings.HasSuffix(prefix, "_") && !strings.HasSuffix(prefix, "-") {
-			prefix += "_"
-		}
 		tags = append(tags, "env")
 	}
 	if fromDir {
@@ -350,7 +346,7 @@ func (s DirSource) Load(structPtr interface{}) error {
 		if !file.IsDir() && file.Size() < 10485760 { // 10 Mb
 			data, err := ioutil.ReadFile(filepath.Join(s.Path, file.Name()))
 			if err != nil {
-				return err
+				continue
 			}
 			dirMap[file.Name()] = string(data)
 		}
@@ -390,11 +386,6 @@ func getFile(path string) (*os.File, error) {
 }
 
 func map2struct(tag, prefix string, mp map[string]string, structPtr interface{}) error {
-	prefix = strings.TrimSpace(strings.ToUpper(prefix))
-	if prefix != "" && !strings.HasSuffix(prefix, "_") && !strings.HasSuffix(prefix, "-") {
-		prefix += "_"
-	}
-
 	for key, value := range mp {
 		key = strings.TrimSpace(key)
 		if key != "" && value != "" {
@@ -465,6 +456,10 @@ func convertName(name, tag, tagVal, prefix string) (fieldName, separator string)
 	}
 
 	if tag == "env" {
+		prefix = strings.TrimSpace(prefix)
+		if prefix != "" && !strings.HasSuffix(prefix, "_") && !strings.HasSuffix(prefix, "-") {
+			prefix += "_"
+		}
 		if prefix != "" && !strings.HasPrefix(fieldName, prefix) {
 			fieldName = prefix + fieldName
 		}
