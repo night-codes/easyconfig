@@ -150,6 +150,39 @@ func TestTOMLSourceLoader(t *testing.T) {
 	})
 }
 
+func TestEDNSourceLoader(t *testing.T) {
+	t.Run("EDNSource.Load", func(t *testing.T) {
+		config := new(Config)
+		loader := NewLoader([]Source{
+			EDNSource{"tests/config.edn"},
+		})
+		if err := loader.Load(config); err != nil {
+			t.Errorf("Error = %s, want %s", err.Error(), "nil")
+		}
+		if config.PostgresUser != "postgres" {
+			t.Errorf("PostgresUser = %s, want %s", config.PostgresUser, "postgres")
+		}
+		if config.PostgresPassword != "password" {
+			t.Errorf("PostgresPassword = %s, want %s", config.PostgresPassword, "password")
+		}
+		if config.PostgresHost != "localhost" {
+			t.Errorf("PostgresHost = %s, want %s", config.PostgresHost, "localhost")
+		}
+		if config.PostgresDBName != "db-name" {
+			t.Errorf("PostgresDBName = %s, want %s", config.PostgresDBName, "db-name")
+		}
+		if config.PostgresPort != 5432 {
+			t.Errorf("PostgresPort = %d, want %d", config.PostgresPort, 5432)
+		}
+		if config.PostgresSSLMode != "disable" {
+			t.Errorf("PostgresSSLMode = %s, want %s", config.PostgresSSLMode, "disable")
+		}
+		if fmt.Sprintf("%v", config.Slice) != "[a1 a2 a3 a4 a5]" {
+			t.Errorf("PostgresSSLMode = %v, want %s", config.Slice, "[a1 a2 a3 a4 a5]")
+		}
+	})
+}
+
 func TestDirSourceLoader(t *testing.T) {
 	t.Run("DirSource.Load", func(t *testing.T) {
 		config := new(Config)

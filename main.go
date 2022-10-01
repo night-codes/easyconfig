@@ -16,6 +16,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v2"
+	"olympos.io/encoding/edn"
 )
 
 type (
@@ -49,6 +50,11 @@ type (
 
 	// TOMLSource loads configuration from the given .toml file.
 	TOMLSource struct {
+		Path string
+	}
+
+	// EDNSource loads configuration from the given .edn file.
+	EDNSource struct {
 		Path string
 	}
 
@@ -255,6 +261,8 @@ func (s FileSource) Load(structPtr interface{}) error {
 			return (&EnvFileSource{Path: s.Path}).Load(structPtr)
 		case ".toml":
 			return (&TOMLSource{Path: s.Path}).Load(structPtr)
+		case ".edn":
+			return (&EDNSource{Path: s.Path}).Load(structPtr)
 		default:
 			if err := (&JSONSource{Path: s.Path}).Load(structPtr); err == nil {
 				return nil
@@ -279,6 +287,7 @@ func (s JSONSource) Load(structPtr interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 	return json.NewDecoder(file).Decode(structPtr)
 }
 
@@ -288,6 +297,7 @@ func (s YAMLSource) Load(structPtr interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
@@ -303,8 +313,26 @@ func (s TOMLSource) Load(structPtr interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
+
 	_, err = toml.DecodeReader(file, structPtr)
 	return err
+}
+
+// Load EDN configuration file
+func (s EDNSource) Load(structPtr interface{}) error {
+	file, err := getFile(s.Path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return err
+	}
+
+	return edn.Unmarshal(data, structPtr)
 }
 
 // Load ENV configuration file
@@ -313,6 +341,7 @@ func (s EnvFileSource) Load(structPtr interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	envMap, err := godotenv.Parse(file)
 	if err != nil {
