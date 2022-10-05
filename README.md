@@ -58,6 +58,7 @@ func main() {
 			easyconfig.YAMLSource{Path: "./config.yaml"},
 			easyconfig.JSONSource{Path: "./config.json"},
 			easyconfig.TOMLSource{Path: "./config.toml"},
+			easyconfig.ednSource{Path: "./config.edn"},
 			easyconfig.EnvFileSource{Prefix: "APP", Path: "./config.env"},
 			easyconfig.DirSource{Path: "./k8s-secret"}, // loads configuration from the mounted Secrets or ConfigMap kubernetes directory (file=value)
 			easyconfig.EnvSource{Prefix: "APP"},        // loads configuration from environment variables
